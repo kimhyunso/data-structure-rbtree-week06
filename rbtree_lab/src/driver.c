@@ -28,11 +28,19 @@ int main(int argc, char *argv[]) {
     // printNode(tree, tree->root);
     // printf("%d", findNode->key);
 
-    node_t* minNode = rbtree_min(tree);
-    node_t* maxNode = rbtree_max(tree);
+    // node_t* minNode = rbtree_min(tree);
+    // node_t* maxNode = rbtree_max(tree);
 
-    printf("%d", minNode->key);
-    printf("%d", maxNode->key);
+    // printf("%d", minNode->key);
+    // printf("%d", maxNode->key);
+
+    key_t entries[] = {10, 5, 8, 34, 67, 23, 156, 24, 2, 12, 24, 36, 990, 25};
+    const size_t n = sizeof(entries) / sizeof(entries[0]);
+    rbtree_to_array(tree, entries, n);
+
+    for (int i = 0; i < n; i++) {
+        printf("%d\n", entries[i]);
+    }
 
     return 0;
 }

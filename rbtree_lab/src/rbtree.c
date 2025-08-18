@@ -54,6 +54,46 @@ static node_t* find(rbtree* t, key_t key) {
 }
 
 
+static void left_rotate(rbtree* t, node_t* cur) {
+	node_t* temp = cur->right;
+	cur->right = temp->left;
+
+	if (temp->left != t->nil) {
+		temp->left->parent = cur;
+	}
+
+	temp->parent = cur->parent;
+	if (cur->parent == t->nil) {
+		t->root = temp;
+	} else if (cur == cur->parent->left) {
+		cur->parent->left = temp;
+	} else {
+		cur->parent->right = temp;
+	}
+	temp->left = cur;
+	cur->parent = temp;
+}
+
+static void right_rotate(rbtree* t, node_t* cur) {
+	node_t* temp = cur->left;
+	cur->left = temp->right;
+
+	if (temp->right != t->nil) {
+		temp->right->parent = cur;
+	}
+
+	temp->parent = cur->parent;
+	if (cur->parent == t->nil) {
+		t->root = temp;
+	} else if (cur == cur->parent->left) {
+		cur->parent->left = temp;
+	} else {
+		cur->parent->right = temp;
+	}
+	temp->right = cur;
+	cur->parent = temp;
+}
+
 node_t* rbtree_insert(rbtree *t, const key_t key) {
 	node_t* newNode = create_node(t, key);
 	node_t* findNode = find(t, key);
@@ -110,46 +150,6 @@ node_t* rbtree_insert(rbtree *t, const key_t key) {
 	return t->root;
 }
 
-static void left_rotate(rbtree* t, node_t* cur) {
-	node_t* temp = cur->right;
-	cur->right = temp->left;
-
-	if (temp->left != t->nil) {
-		temp->left->parent = cur;
-	}
-
-	temp->parent = cur->parent;
-	if (cur->parent == t->nil) {
-		t->root = temp;
-	} else if (cur == cur->parent->left) {
-		cur->parent->left = temp;
-	} else {
-		cur->parent->right = temp;
-	}
-	temp->left = cur;
-	cur->parent = temp;
-}
-
-static void right_rotate(rbtree* t, node_t* cur) {
-	node_t* temp = cur->left;
-	cur->left = temp->right;
-
-	if (temp->right != t->nil) {
-		temp->right->parent = cur;
-	}
-
-	temp->parent = cur->parent;
-	if (cur->parent == t->nil) {
-		t->root = temp;
-	} else if (cur == cur->parent->left) {
-		cur->parent->left = temp;
-	} else {
-		cur->parent->right = temp;
-	}
-	temp->right = cur;
-	cur->parent = temp;
-}
-
 node_t* rbtree_find(const rbtree* t , const key_t key) {
 	node_t* head = t->root;
 
@@ -198,7 +198,22 @@ int rbtree_erase(rbtree *t, node_t *p) {
   	return 0;
 }
 
-int rbtree_to_array(const rbtree *t, key_t *arr, const size_t n) {
-  	// TODO: implement to_array
-  	return 0;
+static void inorder(node_t* node, node_t* nil, key_t* arr, size_t n, size_t* index) {
+	if (node == nil || *index >= n) {
+		return;
+	}
+
+	inorder(node->left, nil, arr, n, index);
+	if (*index < n) {
+        arr[*index] = node->key;
+        (*index)++;
+    }
+	inorder(node->right, nil, arr, n, index);
+}
+
+int rbtree_to_array(const rbtree* t, key_t* arr, const size_t n) {
+	if (t->root == t->nil) return 0;
+	size_t index = 0;
+	inorder(t->root, t->nil, arr, n, &index);
+	return 1;
 }
